@@ -19,7 +19,7 @@ constexpr int solverIterationsPerFrame = 18;
 
 Rectangle GetLockButtonBounds()
 {
-    return Rectangle { 18.0f, 18.0f, 190.0f, 48.0f };
+    return Rectangle { 22.0f, 22.0f, 225.0f, 56.0f };
 }
 
 float LengthSquared(const Vector3 &value)
@@ -418,7 +418,7 @@ void DrawInverseKinematicsUi(
 
     const char *buttonText =
         controller.locked ? "DESTRAVAR ROBO" : "TRAVAR ROBO";
-    const float buttonFontSize = 18.0f;
+    const float buttonFontSize = 21.0f;
     const Vector2 textSize = MeasureTextEx(
         GetUiFont(),
         buttonText,
@@ -442,7 +442,7 @@ void DrawInverseKinematicsUi(
                 : "Clique e arraste o orgao terminal",
             buttonBounds.x,
             buttonBounds.y + buttonBounds.height + 8.0f,
-            15.0f,
+            18.0f,
             DARKGRAY);
     }
 }

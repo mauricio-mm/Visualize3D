@@ -6,11 +6,12 @@
 
 int main(void)
 {
-    constexpr int screenWidth = 1280;
-    constexpr int screenHeight = 720;
-
-    SetConfigFlags(FLAG_MSAA_4X_HINT);
-    InitWindow(screenWidth, screenHeight, "Visualize3D");
+    SetConfigFlags(
+        FLAG_MSAA_4X_HINT |
+        FLAG_WINDOW_RESIZABLE |
+        FLAG_WINDOW_HIGHDPI);
+    InitWindow(1280, 720, "Visualize3D");
+    MaximizeWindow();
     SetTargetFPS(60);
 
     Environment3D environment = CreateEnvironment3D();

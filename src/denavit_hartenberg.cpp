@@ -1,5 +1,6 @@
 #include "denavit_hartenberg.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "ui.h"
@@ -96,18 +97,21 @@ void DrawMatrixSection(
     const char *name,
     const HomogeneousMatrix &matrix,
     int panelX,
-    int sectionY)
+    int sectionY,
+    float fontScale)
 {
-    constexpr float matrixFontSize = 12.0f;
-    constexpr int rowHeight = 13;
-    constexpr int columnWidth = 70;
+    const float matrixFontSize = 17.0f * fontScale;
+    const int rowHeight =
+        static_cast<int>(20.0f * fontScale);
+    const int columnWidth =
+        static_cast<int>(88.0f * fontScale);
 
     const Vector3 position = GetDhPosition(matrix);
     DrawUiText(
         name,
         static_cast<float>(panelX + 20),
         static_cast<float>(sectionY),
-        15.0f,
+        17.0f * fontScale,
         BLACK);
     DrawUiText(
         TextFormat(
@@ -115,12 +119,14 @@ void DrawMatrixSection(
             position.x,
             position.y,
             position.z),
-        static_cast<float>(panelX + 151),
+        static_cast<float>(
+            panelX + static_cast<int>(170.0f * fontScale)),
         static_cast<float>(sectionY + 1),
-        12.0f,
+        14.0f * fontScale,
         DARKGRAY);
 
-    const int matrixY = sectionY + 21;
+    const int matrixY =
+        sectionY + static_cast<int>(25.0f * fontScale);
 
     for (std::size_t row = 0; row < 4; ++row)
     {
@@ -223,9 +229,22 @@ void DrawDhRobot3D(const DhRobot &robot)
 
 void DrawDhRobotMatrices(const DhRobot &robot)
 {
-    constexpr int panelWidth = 390;
     constexpr int panelMargin = 14;
-    constexpr int sectionHeight = 89;
+    constexpr int sectionCount =
+        static_cast<int>(dhJointCount) + 1;
+
+    const float fontScale = std::clamp(
+        static_cast<float>(GetScreenHeight()) / 1080.0f,
+        0.88f,
+        1.15f);
+    const int panelWidth =
+        static_cast<int>(440.0f * fontScale);
+    const int headerHeight =
+        static_cast<int>(56.0f * fontScale);
+    const int panelHeight =
+        GetScreenHeight() - panelMargin * 2;
+    const int sectionHeight =
+        (panelHeight - headerHeight) / sectionCount;
 
     const int panelX = GetScreenWidth() - panelWidth - panelMargin;
     const Rectangle panel = {
@@ -251,10 +270,10 @@ void DrawDhRobotMatrices(const DhRobot &robot)
         "Matrizes homogeneas DH",
         static_cast<float>(panelX + 20),
         static_cast<float>(panelMargin + 14),
-        21.0f,
+        25.0f * fontScale,
         BLACK);
 
-    int sectionY = panelMargin + 47;
+    int sectionY = panelMargin + headerHeight;
 
     for (std::size_t index = 0; index < dhJointCount; ++index)
     {
@@ -264,7 +283,8 @@ void DrawDhRobotMatrices(const DhRobot &robot)
                 static_cast<int>(index + 1)),
             robot.jointTransforms[index],
             panelX,
-            sectionY);
+            sectionY,
+            fontScale);
         sectionY += sectionHeight;
     }
 
@@ -272,5 +292,6 @@ void DrawDhRobotMatrices(const DhRobot &robot)
         "Orgao terminal  (T0E)",
         robot.endEffectorTransform,
         panelX,
-        sectionY);
+        sectionY,
+        fontScale);
 }
