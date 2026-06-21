@@ -28,15 +28,19 @@ void InitEnvironment3D()
     EnableCursor();
 }
 
-void UpdateEnvironment3D(Environment3D *environment)
+void UpdateEnvironment3D(
+    Environment3D *environment,
+    bool blockMouseInput)
 {
     CameraMouseControl requestedControl = CameraMouseControl::None;
 
-    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+    if (!blockMouseInput &&
+        IsMouseButtonDown(MOUSE_BUTTON_LEFT))
     {
         requestedControl = CameraMouseControl::Rotate;
     }
-    else if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+    else if (!blockMouseInput &&
+             IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
     {
         requestedControl = CameraMouseControl::Pan;
     }
@@ -90,7 +94,7 @@ void UpdateEnvironment3D(Environment3D *environment)
         &environment->camera,
         movement,
         rotation,
-        -GetMouseWheelMove());
+        blockMouseInput ? 0.0f : -GetMouseWheelMove());
 }
 
 void DrawEnvironment3D(const Environment3D &environment)

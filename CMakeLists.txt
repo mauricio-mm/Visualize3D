@@ -17,6 +17,8 @@ add_executable(Visualize3D
     src/main.cpp
     src/environment3d.cpp
     src/denavit_hartenberg.cpp
+    src/inverse_kinematics.cpp
+    src/ui.cpp
 )
 
 target_include_directories(Visualize3D PRIVATE

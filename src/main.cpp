@@ -1,6 +1,8 @@
 #include "denavit_hartenberg.h"
 #include "environment3d.h"
+#include "inverse_kinematics.h"
 #include "raylib.h"
+#include "ui.h"
 
 int main(void)
 {
@@ -13,12 +15,21 @@ int main(void)
 
     Environment3D environment = CreateEnvironment3D();
     DhRobot robot = CreateDhRobot();
+    InverseKinematicsController inverseKinematics =
+        CreateInverseKinematicsController(robot);
     InitEnvironment3D();
-    InitDhVisuals();
+    InitUi();
 
     while (!WindowShouldClose())
     {
-        UpdateEnvironment3D(&environment);
+        const bool inverseKinematicsCapturesMouse =
+            UpdateInverseKinematics(
+                &inverseKinematics,
+                &robot,
+                environment.camera);
+        UpdateEnvironment3D(
+            &environment,
+            inverseKinematicsCapturesMouse);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -26,14 +37,16 @@ int main(void)
         BeginMode3D(environment.camera);
         DrawEnvironment3D(environment);
         DrawDhRobot3D(robot);
+        DrawInverseKinematics3D(inverseKinematics, robot);
         EndMode3D();
 
         DrawDhRobotMatrices(robot);
+        DrawInverseKinematicsUi(inverseKinematics);
 
         EndDrawing();
     }
 
-    ShutdownDhVisuals();
+    ShutdownUi();
     ShutdownEnvironment3D();
     CloseWindow();
     return 0;

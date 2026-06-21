@@ -30,9 +30,8 @@ struct DhRobot
 };
 
 DhRobot CreateDhRobot();
-void InitDhVisuals();
-void ShutdownDhVisuals();
 void UpdateDhRobot(DhRobot *robot);
+Vector3 GetDhEndEffectorWorldPosition(const DhRobot &robot);
 void DrawDhRobot3D(const DhRobot &robot);
 void DrawDhRobotMatrices(const DhRobot &robot);
 

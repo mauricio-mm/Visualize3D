@@ -2,39 +2,14 @@
 
 #include <cmath>
 
+#include "ui.h"
+
 namespace
 {
 constexpr float jointRadius = 0.16f;
 constexpr float linkRadius = 0.065f;
+constexpr float robotLinkLength = 1.5f;
 constexpr int linkSides = 12;
-Font uiFont = {};
-bool uiFontMustBeUnloaded = false;
-
-Font GetUiFont()
-{
-    if (IsFontValid(uiFont))
-    {
-        return uiFont;
-    }
-
-    return GetFontDefault();
-}
-
-void DrawUiText(
-    const char *text,
-    float x,
-    float y,
-    float fontSize,
-    Color color)
-{
-    DrawTextEx(
-        GetUiFont(),
-        text,
-        Vector2 { x, y },
-        fontSize,
-        0.5f,
-        color);
-}
 
 HomogeneousMatrix IdentityMatrix()
 {
@@ -171,58 +146,17 @@ DhRobot CreateDhRobot()
 
     // a, alpha, d e theta seguem a convencao DH classica.
     robot.joints = {
-        DhParameters { 0.0f, 90.0f, 1.5f, 35.0f },
-        DhParameters { 2.5f, 0.0f, 0.0f, 25.0f },
-        DhParameters { 2.0f, 0.0f, 0.0f, -45.0f },
-        DhParameters { 0.0f, 90.0f, 0.75f, 30.0f },
-        DhParameters { 0.45f, -90.0f, 0.0f, 20.0f },
-        DhParameters { 0.0f, 0.0f, 0.6f, -25.0f }
+        DhParameters { 0.0f, 90.0f, robotLinkLength, 35.0f },
+        DhParameters { robotLinkLength, 0.0f, 0.0f, 25.0f },
+        DhParameters { robotLinkLength, 0.0f, 0.0f, -45.0f },
+        DhParameters { 0.0f, 90.0f, robotLinkLength, 30.0f },
+        DhParameters { robotLinkLength, -90.0f, 0.0f, 20.0f },
+        DhParameters { 0.0f, 0.0f, robotLinkLength, -25.0f }
     };
     robot.toolLength = 0.7f;
 
     UpdateDhRobot(&robot);
     return robot;
-}
-
-void InitDhVisuals()
-{
-    const char *fontPath = nullptr;
-
-    if (FileExists("C:/Windows/Fonts/segoeui.ttf"))
-    {
-        fontPath = "C:/Windows/Fonts/segoeui.ttf";
-    }
-    else if (FileExists("C:/Windows/Fonts/arial.ttf"))
-    {
-        fontPath = "C:/Windows/Fonts/arial.ttf";
-    }
-
-    if (fontPath != nullptr)
-    {
-        uiFont = LoadFontEx(fontPath, 32, nullptr, 0);
-        uiFontMustBeUnloaded =
-            IsFontValid(uiFont) &&
-            uiFont.texture.id != GetFontDefault().texture.id;
-    }
-
-    if (!IsFontValid(uiFont))
-    {
-        uiFont = GetFontDefault();
-        uiFontMustBeUnloaded = false;
-    }
-
-    SetTextureFilter(uiFont.texture, TEXTURE_FILTER_BILINEAR);
-}
-
-void ShutdownDhVisuals()
-{
-    if (uiFontMustBeUnloaded)
-    {
-        UnloadFont(uiFont);
-    }
-
-    uiFont = {};
-    uiFontMustBeUnloaded = false;
 }
 
 void UpdateDhRobot(DhRobot *robot)
@@ -248,6 +182,11 @@ void UpdateDhRobot(DhRobot *robot)
         CreateDhTransform(toolParameters));
 }
 
+Vector3 GetDhEndEffectorWorldPosition(const DhRobot &robot)
+{
+    return DhToWorld(GetDhPosition(robot.endEffectorTransform));
+}
+
 void DrawDhRobot3D(const DhRobot &robot)
 {
     Vector3 previousPosition = { 0.0f, 0.0f, 0.0f };
@@ -270,7 +209,7 @@ void DrawDhRobot3D(const DhRobot &robot)
     }
 
     const Vector3 endEffectorPosition =
-        DhToWorld(GetDhPosition(robot.endEffectorTransform));
+        GetDhEndEffectorWorldPosition(robot);
 
     DrawCylinderEx(
         previousPosition,

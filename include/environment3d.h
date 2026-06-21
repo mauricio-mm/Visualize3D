@@ -20,7 +20,9 @@ struct Environment3D
 
 Environment3D CreateEnvironment3D();
 void InitEnvironment3D();
-void UpdateEnvironment3D(Environment3D *environment);
+void UpdateEnvironment3D(
+    Environment3D *environment,
+    bool blockMouseInput);
 void DrawEnvironment3D(const Environment3D &environment);
 void ShutdownEnvironment3D();
 
